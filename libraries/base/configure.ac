@@ -42,7 +42,10 @@ dnl functions if it's really there.
 AC_CHECK_HEADERS([wctype.h], [AC_CHECK_FUNCS(iswspace)])
 
 AC_CHECK_FUNCS([lstat])
-AC_CHECK_LIB([rt], [clock_gettime])
+AC_SEARCH_LIBS([clock_gettime], [rt], [
+                AS_IF([test "x$ac_cv_search_clock_gettime" = "x-lrt"], [
+                       AC_DEFINE([HAVE_LIBRT], [1], [Define to 1 if need librt])])
+                ])
 AC_CHECK_FUNCS([clock_gettime])
 AC_CHECK_FUNCS([getclock getrusage times])
 AC_CHECK_FUNCS([_chsize ftruncate])

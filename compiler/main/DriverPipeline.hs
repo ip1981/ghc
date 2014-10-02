@@ -1880,10 +1880,11 @@ linkBinary' staticLink dflags o_files dep_packages = do
          | WayThreaded `elem` ways dflags =
             let os = platformOS (targetPlatform dflags)
             in if os == OSOsf3 then ["-lpthread", "-lexc"]
-               else if os `elem` [OSMinGW32, OSFreeBSD, OSOpenBSD,
-                                  OSNetBSD, OSHaiku, OSQNXNTO, OSiOS, OSDarwin]
-               then []
-               else ["-lpthread"]
+               else [
+#if HAVE_LIBPTHREAD
+               "-lpthread"
+#endif
+               ]
          | otherwise               = []
 
     rc_objs <- maybeCreateManifest dflags output_fn

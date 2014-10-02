@@ -856,7 +856,14 @@ dnl Check for libraries
 dnl ################################################################
 
 dnl ** check whether we need -ldl to get dlopen()
-AC_CHECK_LIB(dl, dlopen)
+HaveLibDL=NO
+AC_SEARCH_LIBS(dlopen, dl,
+    [AS_IF([test "x$ac_cv_search_dlopen" = "x-ldl"],[
+     HaveLibDL=YES
+     AC_DEFINE([HAVE_LIBDL], [1], [Define to 1 if you need -ldl to get dlopen().])
+     ]
+    ]))
+AC_SUBST(HaveLibDL)
 
 dnl --------------------------------------------------
 dnl * Miscellaneous feature tests
@@ -880,8 +887,15 @@ FP_LEADING_UNDERSCORE
 
 FP_VISIBILITY_HIDDEN
 
-dnl ** check for librt
-AC_CHECK_LIB(rt, clock_gettime)
+AC_SEARCH_LIBS([pthread_create], [pthread], [
+    AS_IF([test "x$ac_cv_search_pthread_create" = "x-lpthread"], [
+       AC_DEFINE([HAVE_LIBPTHREAD], [1], [Define to 1 if need libpthread])])
+    ])
+AC_SEARCH_LIBS([clock_gettime], [rt], [
+    AS_IF([test "x$ac_cv_search_clock_gettime" = "x-lrt"], [
+       AC_DEFINE([HAVE_LIBRT], [1], [Define to 1 if need librt])])
+    ])
+
 AC_CHECK_FUNCS(clock_gettime timer_settime)
 FP_CHECK_TIMER_CREATE
 
